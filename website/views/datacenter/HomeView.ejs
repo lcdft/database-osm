@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Data Center OSM - Secure and reliable server cache upload service for game servers. Fast, efficient, and easy to use.">
+    <meta name="keywords" content="data center, server cache, game server, cache upload, OSM, server management">
+    <meta name="author" content="GrowPlus">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Upload Server Cache - Data Center OSM">
+    <meta property="og:description" content="Secure and reliable server cache upload service for game servers. Fast, efficient, and easy to use.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://cdn.growplus.asia/osm">
+    <meta property="og:image" content="/assets/og-image.jpg">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Upload Server Cache - Data Center OSM">
+    <meta name="twitter:description" content="Secure and reliable server cache upload service for game servers">
+    
+    <title>Upload Server Cache - Data Center OSM</title>
+    <link rel="stylesheet" href="/base.css">
+    <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="https://cdn.growplus.asia/osm" />
+    <style>
+        .grid-background {
+            background-image: linear-gradient(rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.95)),
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(99, 102, 241, 0.03) 50px, rgba(99, 102, 241, 0.03) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(99, 102, 241, 0.03) 50px, rgba(99, 102, 241, 0.03) 51px);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .glow {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen grid-background overflow-hidden">
+    <div class="relative min-h-screen flex items-center justify-center px-4">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob"></div>
+            <div class="absolute top-1/3 right-1/4 w-64 h-64 bg-violet-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-2000"></div>
+            <div class="absolute bottom-1/4 left-1/3 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-blob animation-delay-4000"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="relative z-10 max-w-4xl mx-auto text-center">
+            <div class="floating space-y-8">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 text-gradient">
+                    Data Center OSM
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-400 mb-8">
+                    Secure and reliable server cache management solution
+                </p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <a href="/osm/upload" class="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg text-white font-semibold hover:from-indigo-400 hover:to-purple-400 transition-all duration-300 glow">
+                        Upload Cache
+                    </a>
+                    <a href="https://t.me/oxygenbro" target="_blank" class="px-8 py-4 bg-transparent border border-indigo-400/30 rounded-lg text-indigo-300 font-semibold hover:bg-indigo-500/5 transition-all duration-300">
+                        Contact Support
+                    </a>
+                </div>
+                <div class="mt-12 text-gray-500">
+                    <p>Powered by <span class="text-indigo-400">GrowPlus</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent"></div>
+        <div class="absolute top-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-indigo-500/20 to-transparent"></div>
+        <div class="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-indigo-500/20 to-transparent"></div>
+    </div>
+
+    <script>
+        // Add animation classes to Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        blob: "blob 7s infinite"
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": {
+                                transform: "translate(0px, 0px) scale(1)"
+                            },
+                            "33%": {
+                                transform: "translate(30px, -50px) scale(1.1)"
+                            },
+                            "66%": {
+                                transform: "translate(-20px, 20px) scale(0.9)"
+                            },
+                            "100%": {
+                                transform: "translate(0px, 0px) scale(1)"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</body>
+</html>

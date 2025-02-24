@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growtopia - Dashboard</title>
+    <link rel="stylesheet" href="/base.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-transparent">
+    <div class="w-screen h-screen flex justify-center items-center">
+        <div class="border-2 border-[#2b4d6d] p-5 text-[#eeeeee] bg-gradient-to-br min-w-[50vw] from-blue-950 to-[#2b4d6d] rounded-lg shadow-xl shadow-[#2b4d6d]">
+            <h1 class="text-center text-2xl font-bold"><%= cnf.name %> Dashboard</h1>
+            <p class="opacity-70">You are now entering the login page of this server. Please enter your <span style="color:#fefefe" class="font-semibold">GrowID</span> and <span style="color:#fefefe" class="font-semibold">Password</span> if you already have an account, or log in as a guest.</p>
+            <button type="button"
+                class="btn btn-primary hidden"
+                data-toggle="modal"
+                id="modalButton"
+                data-target="#modalShow"
+                data-backdrop="static"
+                data-keyboard="false"
+                hidden
+            ></button>
+            <form 
+            action="/player/growid/login/validate" accept-charset="UTF-8"
+            role="form"
+            required="required"
+            autocomplete="off" method="post" class="mt-3">
+                <div class="mb-1">
+                    <input
+                        name="_token"
+                        type="hidden"
+                        value=""
+                    />
+                    <label for="loginGrowId" class="block text-white text-md">GrowID:</label>
+                    <div class="flex items-center border-2 border-[#136a92] rounded bg-[#2b4d6d] px-3 py-1 gap-2">
+                        <i class="fas fa-user text-white mr-1 text-md"></i>
+                        <input type="text" name="growId" id="loginGrowId" class="w-full bg-[#2b4d6d] text-white text-md placeholder-white focus:outline-none" placeholder="Enter your growid" required>
+                    </div>
+                </div>
+                <div class="mb-1">
+                    <label for="loginPassword" class="block text-white text-md">Password</label>
+                    <div class="flex items-center border-2 border-[#136a92] rounded bg-[#2b4d6d] px-3 py-1 gap-2">
+                        <i class="fas fa-lock text-white mr-1 text-md"></i>
+                        <input type="password" name="password" id="loginPassword" class="w-full bg-[#2b4d6d] text-white text-md placeholder-white focus:outline-none" placeholder="Enter your password" required>
+                        <button type="button" id="toggleLogPassword" class="text-white ml-2 focus:outline-none text-xs">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-end items-center flex-col md:flex-row gap-2 mt-3">
+                    <button id="regisButton" class="px-2 py-1 rounded bg-[#00ff00] text-green-800 text-xl font-bold w-full hover:bg-[#06dd11] transition duration-300 ease-in-out transform" onclick="regis()">Register</button>
+                    <button id="loginButton" type="submit" class="px-2 py-1 rounded bg-[#00b8ff] text-white text-xl font-bold w-full hover:bg-[#06a4dd] transition duration-300 ease-in-out transform">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const growId = document.getElementById("loginGrowId");
+        const password = document.getElementById("loginPassword");
+        const form = document.querySelector("form");
+        
+        document.getElementById('toggleLogPassword').addEventListener('click', function () {
+            const LpasswordField = document.getElementById('loginPassword')
+            const LpasswordFieldType = LpasswordField.getAttribute('type');
+            if (LpasswordFieldType === 'password') {
+                LpasswordField.setAttribute('type', 'text');
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                LpasswordField.setAttribute('type', 'password');
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+    
+        async function regis() {
+            const token = btoa(`_token=NONE&growId=${growId.value}&password=${password.value}`);
+            window.location.href = "/player/growid/login/validate?data=" + encodeURIComponent(token);
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const token = btoa(`_token=NONE&growId=${growId.value}&password=${password.value}`);
+
+            window.location.href = "/player/growid/login/validate?data=" + encodeURIComponent(token);
+        });
+    </script>
+</body>
+</html>

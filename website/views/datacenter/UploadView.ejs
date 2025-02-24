@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Server Cache - Data Center OSM</title>
+    <link rel="stylesheet" href="/base.css">
+    <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
+</head>
+<body class="bg-gray-900 min-h-screen flex items-center justify-center p-4 lg:items-start lg:pt-20">
+    <!-- Main Content -->
+    <div class="w-full max-w-4xl p-8 space-y-6 bg-gray-800 rounded-lg shadow-xl lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0">
+        <!-- Left Column -->
+        <div class="lg:pr-4">
+            <div class="text-center lg:text-left">
+                <h2 class="text-3xl font-bold text-white mb-2">Upload Server Cache</h2>
+                <p class="text-gray-400">Upload your server cache files (ZIP, RAR, or 7Z)</p>
+            </div>
+
+            <!-- Server Info Fields -->
+            <div class="space-y-4 mt-6">
+                <div>
+                    <label for="serverName" class="block text-sm font-medium text-gray-300">Server Name</label>
+                    <input type="text" id="serverName" name="serverName" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter server name" oninput="pathChange(this)">
+                    <small class="text-gray-500">Your cdn will looks like <b><span class="path-name"></span>/</b></small>
+                </div>
+
+                <div>
+                    <label for="serverKey" class="block text-sm font-medium text-gray-300">Server Key</label>
+                    <input type="password" id="serverKey" name="serverKey" required
+                        class="mt-1 block w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter server key">
+                    <small class="text-gray-500"><b>INFO: </b>The server key is used to verify that this is your server.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="lg:pl-4">
+            <form id="uploadForm" class="space-y-6">
+                <!-- File Upload Area -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Upload File</label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="fileUpload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-700 hover:bg-gray-600 transition-colors transform hover:scale-[1.02]">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-400">Upload the cache folder<br></p>
+                            </div>
+                            <input id="fileUpload" type="file" class="hidden" accept="*" webkitdirectory directory multiple />
+                        </label>
+                    </div>
+                    <div id="fileInfo" class="mt-3 text-sm text-gray-400 hidden">
+                        <p>Selected file: <span id="fileName">No file selected</span></p>
+                        <p>Size: <span id="fileSize">-</span></p>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div id="uploadProgress" class="hidden space-y-2">
+                    <div class="flex justify-between text-sm text-gray-400">
+                        <span>Upload Progress</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
+                        <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p id="uploadSpeed" class="text-sm text-gray-400">Speed: 0 MB/s</p>
+                </div>
+                <button type="submit" id="uploadButton"
+                    class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                    Upload File
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3D Notification Card -->
+    <div id="notification" class="fixed top-5 right-5 transform transition-all duration-300 scale-0 opacity-0 perspective-1000">
+        <div class="relative bg-gray-800 text-white p-6 rounded-lg shadow-2xl min-w-[300px] transform transition-transform hover:scale-105 hover:rotate-1">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg"></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-2">
+                    <div id="notificationIcon" class="text-2xl"></div>
+                    <h3 id="notificationTitle" class="text-lg font-semibold"></h3>
+                </div>
+                <p id="notificationMessage" class="text-gray-300"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add this at the beginning of your script section
+        let serverIP = '';
+
+        // Get server IP on page load
+        fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            serverIP = data.ip;
+        })
+        .catch(error => {
+            console.error('Error fetching public IP:', error);
+            // Fallback to alternative IP API if first one fails
+            fetch('https://api.myip.com')
+                .then(response => response.json())
+                .then(data => {
+                    serverIP = data.ip;
+                })
+                .catch(err => console.error('Failed to fetch IP:', err));
+        });
+
+        const form = document.getElementById('uploadForm');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+        const uploadSpeed = document.getElementById('uploadSpeed');
+
+        fileUpload.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                // Calculate total size
+                const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+                
+                // Check total size
+                // if (totalSize > 100 * 1024 * 1024) {
+                //     showNotification('error', 'Total files size exceeds 100MB limit');
+                //     fileUpload.value = '';
+                //     return;
+                // }
+                
+                fileInfo.classList.remove('hidden');
+                fileName.textContent = `${files.length} files selected`;
+                fileSize.textContent = formatFileSize(totalSize);
+                
+                const serverName = document.getElementById('serverName').value;
+                const serverKey = document.getElementById('serverKey').value;
+                
+                if (serverName && serverKey) {
+                    startUpload(files, serverName, serverKey);
+                }
+            }
+        });
+        // Add button disable/enable functionality
+        const uploadButton = document.getElementById('uploadButton');
+
+        function pathChange(input) {
+            const path = input.value.toLowerCase().replace(/\s/g, '-');
+            document.querySelector('.path-name').textContent = 'cdn.growplus.asia/osm/' + path;
+        }
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const files = Array.from(fileUpload.files);
+            if (files.length === 0) {
+                showNotification('failed', 'Please select files');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('serverName', document.getElementById('serverName').value);
+            formData.append('serverKey', document.getElementById('serverKey').value);
+        
+            uploadProgress.classList.remove('hidden');
+            uploadButton.disabled = true;
+        
+            let currentFile = 0;
+            const totalFiles = files.length;
+        
+            for (const file of files) {
+                currentFile++;
+                const fileFormData = new FormData();
+                fileFormData.append('files', file);
+                fileFormData.append('paths', file.webkitRelativePath);
+                fileFormData.append('serverName', document.getElementById('serverName').value);
+                fileFormData.append('serverKey', document.getElementById('serverKey').value);
+        
+                try {
+                    const xhr = new XMLHttpRequest();
+                    const startTime = Date.now();
+        
+                    xhr.upload.addEventListener('progress', (event) => {
+                        if (event.lengthComputable) {
+                            const percentComplete = (event.loaded / event.total) * 100;
+                            const elapsedTime = (Date.now() - startTime) / 1000;
+                            const uploadSpeedMBps = (event.loaded / (1024 * 1024)) / elapsedTime;
+                            
+                            progressBar.style.width = `${percentComplete}%`;
+                            progressPercent.textContent = `${percentComplete.toFixed(1)}% (${currentFile}/${totalFiles})`;
+                            uploadSpeed.textContent = `Speed: ${uploadSpeedMBps.toFixed(2)} MB/s`;
+                        }
+                    });
+        
+                    await new Promise((resolve, reject) => {
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                resolve();
+                            } else {
+                                try {
+                                    const response = JSON.parse(xhr.responseText);
+                                    reject(new Error(response.error || 'Upload failed'));
+                                } catch {
+                                    reject(new Error('Upload failed'));
+                                }
+                            }
+                        };
+        
+                        xhr.onerror = () => reject(new Error('Network error occurred'));
+        
+                        xhr.open('POST', '/osm/upload', true);
+                        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                        xhr.setRequestHeader('Accept', '*/*');
+                        xhr.send(fileFormData);
+                    });
+        
+                } catch (error) {
+                    showNotification('error', `Error uploading ${file.webkitRelativePath}: ${error.message}`);
+                    uploadButton.disabled = false;
+                    return;
+                }
+            }
+        
+            showNotification('success', 'All files uploaded successfully');
+            uploadButton.disabled = false;
+            
+            // Reset form after successful upload
+            form.reset();
+            fileInfo.classList.add('hidden');
+            uploadProgress.classList.add('hidden');
+        });
+        // Modify file selection handler to only show file count
+        fileUpload.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                fileInfo.classList.remove('hidden');
+                fileName.textContent = `${files.length} files selected`;
+                fileSize.textContent = `From: ${files[0].webkitRelativePath.split('/')[0]}`;
+            }
+        });
+        // Update drop handler for directories
+        function handleDrop(e) {
+            const items = e.dataTransfer.items;
+            if (items) {
+                const files = [];
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i].webkitGetAsEntry();
+                    if (item) {
+                        traverseFileTree(item, files);
+                    }
+                }
+            }
+        }
+        function traverseFileTree(item, files) {
+            if (item.isFile) {
+                item.file(file => {
+                    files.push(file);
+                    updateFileInfo(files);
+                });
+            } else if (item.isDirectory) {
+                const dirReader = item.createReader();
+                dirReader.readEntries(entries => {
+                    entries.forEach(entry => traverseFileTree(entry, files));
+                });
+            }
+        }
+        function updateFileInfo(files) {
+            if (files.length > 0) {
+                const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+                fileInfo.classList.remove('hidden');
+                fileName.textContent = `${files.length} files selected`;
+                fileSize.textContent = formatFileSize(totalSize);
+            }
+        }
+        function showNotification(type, message) {
+            const notification = document.getElementById('notification');
+            const notificationIcon = document.getElementById('notificationIcon');
+            const notificationTitle = document.getElementById('notificationTitle');
+            const notificationMessage = document.getElementById('notificationMessage');
+        
+            if (type === 'success') {
+                notificationIcon.textContent = '✅';
+                notificationTitle.textContent = 'Success';
+                notificationTitle.className = 'text-lg font-semibold text-green-400';
+            } else {
+                notificationIcon.textContent = '❌';
+                notificationTitle.textContent = 'Error';
+                notificationTitle.className = 'text-lg font-semibold text-red-400';
+            }
+        
+            notificationMessage.textContent = message;
+            notification.classList.remove('scale-0', 'opacity-0');
+            notification.classList.add('scale-100', 'opacity-100', 'rotate-1');
+        
+            setTimeout(() => {
+                notification.classList.remove('scale-100', 'opacity-100', 'rotate-1');
+                notification.classList.add('scale-0', 'opacity-0');
+                if (type === 'success') {
+                    // Reset form on success
+                    form.reset();
+                    fileInfo.classList.add('hidden');
+                    uploadProgress.classList.add('hidden');
+                }
+                uploadButton.disabled = false;
+            }, 5000);
+        }
+        // Update XHR handlers
+        xhr.onload = function() {
+            try {
+                const response = JSON.parse(xhr.response);
+                if (xhr.status === 200) {
+                    showNotification('success', response.message);
+                } else {
+                    showNotification('error', response.error || 'Upload failed. Please try again.');
+                }
+            } catch (error) {
+                showNotification('error', 'Invalid server response');
+            }
+            uploadButton.disabled = false;
+        };
+
+        xhr.onerror = function() {
+            showNotification('error', 'Network error occurred. Please check your connection.');
+            uploadButton.disabled = false;
+        };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</body>
+</html>
