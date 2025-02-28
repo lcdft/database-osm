@@ -1,2 +1,4 @@
 node_modules/
 website/public/osm/**
+website/temp/*
+website/temp/**

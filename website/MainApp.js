@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 404 route
 app.use((req, res) => {
     console.log(`[${new Date().toLocaleString()}] Missing file: ${req.url} [${req.method}] - ${res.statusCode}`);
-    return res.send('404 - File not found');
+    return res.status(200).send('404 - File not found');
 });
 
 // exporting express app

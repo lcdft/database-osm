@@ -6,7 +6,7 @@ module.exports = (app) => {
     // setting the rate limiter
     app.use(rateLimit({
         windowMs: 15 * 60 * 1000,
-        max: 100,
+        max: 500,
         headers: true,
     }));
 };
