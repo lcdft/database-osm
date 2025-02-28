@@ -18,10 +18,13 @@ require(path.join(__dirname, 'routes', 'GrowtopiaGame.js'))(app);
 require(path.join(__dirname, 'routes', 'GrowtopiaWebview.js'))(app);
 require(path.join(__dirname, 'routes', 'DataCenter.js'))(app);
 
+// static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 // 404 route
 app.use((req, res) => {
     console.log(`[${new Date().toLocaleString()}] Missing file: ${req.url} [${req.method}] - ${res.statusCode}`);
-    return res.sendStatus(404);
+    return res.send('404 - File not found');
 });
 
 // exporting express app

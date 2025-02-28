@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager - Data Center OSM</title>
+    <link rel="stylesheet" href="/base.css">
+    <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/manager.css">
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">Server Authentication</h2>
+            <form id="authForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Server Name</label>
+                    <input type="text" id="serverName" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:border-purple-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Server Key</label>
+                    <input type="password" id="serverKey" class="w-full p-2 bg-gray-700 rounded border border-gray-600 focus:border-purple-500">
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 p-2 rounded">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-800 p-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold">File Manager</h1>
+            <div class="flex gap-4">
+                <div class="stats-card bg-gray-700 p-4 rounded-lg">
+                    <h3>Requests</h3>
+                    <p id="requestCount" class="text-2xl font-bold text-purple-400">0</p>
+                </div>
+                <div class="stats-card bg-gray-700 p-4 rounded-lg">
+                    <h3>Responses</h3>
+                    <p id="responseCount" class="text-2xl font-bold text-purple-400">0</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 flex gap-4">
+            <!-- File Explorer -->
+            <div class="flex-1 bg-gray-800 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="breadcrumb text-gray-400">
+                        <span id="currentPath">/</span>
+                    </div>
+                    <button id="uploadBtn" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded">
+                        Upload Files
+                    </button>
+                </div>
+                <div id="fileExplorer" class="grid grid-cols-4 gap-4 h-[calc(100vh-300px)] overflow-y-auto">
+                    <!-- Files will be populated here -->
+                </div>
+            </div>
+
+            <!-- Console -->
+            <div class="w-80 bg-gray-800 rounded-lg p-4">
+                <h2 class="text-lg font-bold mb-4">Missing Files</h2>
+                <div id="console" class="h-[calc(100vh-300px)] overflow-y-auto bg-gray-900 p-4 rounded font-mono text-sm">
+                    <!-- Console output will be here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/scripts/manager.js"></script>
+</body>
+</html>

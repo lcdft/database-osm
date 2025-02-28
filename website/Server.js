@@ -5,8 +5,8 @@ const https = require('https');
 const fs = require('fs');
 const tls = require('tls');
 
-const sniDefaultCert = fs.readFileSync(path.join(__dirname, 'certs/_wildcard.gtps.pw.pem'));
-const sniDefaultKey = fs.readFileSync(path.join(__dirname, 'certs/_wildcard.gtps.pw-key.pem'));
+const sniDefaultCert = fs.readFileSync(path.join(__dirname, 'certs/cdngtps.my.id-crt.pem'));
+const sniDefaultKey = fs.readFileSync(path.join(__dirname, 'certs/cdngtps.my.id-key.pem'));
 
 const sniCallback = (serverName, callback) => {
 	console.log(serverName);
