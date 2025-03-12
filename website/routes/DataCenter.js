@@ -5,11 +5,7 @@ const fsSync = require('fs');
 const os = require('os');
 const crypto = require('crypto');
 const multer = require('multer');
-const AdmZip = require('adm-zip');
 const sanitize = require('sanitize-filename');
-const { exec } = require('child_process');
-const util = require('util');
-const execPromise = util.promisify(exec);
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -44,68 +40,6 @@ const upload = multer({
         }
     }
 });
-
-async function extractArchive(filePath, outputPath, fileType) {
-    try {
-        switch (fileType.toLowerCase()) {
-            case '.zip':
-                const zip = new AdmZip(filePath);
-                await new Promise((resolve, reject) => {
-                    try {
-                        zip.extractAllTo(outputPath, true);
-                        resolve();
-                    } catch (err) {
-                        reject(err);
-                    }
-                });
-                break;
-            case '.rar':
-                // Check for both Windows and Linux RAR paths
-                const rarPaths = [
-                    process.env.WINRAR_PATH || 'C:\\Program Files\\WinRAR\\WinRAR.exe',
-                    process.env.LINUX_RAR_PATH || '/usr/bin/unrar'
-                ];
-                
-                const rarPath = rarPaths.find(path => fsSync.existsSync(path));
-                if (!rarPath) {
-                    throw new Error('RAR/UnRAR is not installed or not found in the default locations');
-                }
-
-                // Use different commands for Windows and Linux
-                const rarCommand = process.platform === 'win32' 
-                    ? `"${rarPath}" x -y "${filePath}" "${outputPath}"`
-                    : `"${rarPath}" x -y "${filePath}" "${outputPath}"`;
-                
-                await execPromise(rarCommand);
-                break;
-            case '.7z':
-                // Check for both Windows and Linux 7-Zip paths
-                const sevenZipPaths = [
-                    process.env.SEVENZIP_PATH || 'C:\\Program Files\\7-Zip\\7z.exe',
-                    '/usr/bin/7z',
-                    '/usr/bin/7za'
-                ];
-                
-                const sevenZipPath = sevenZipPaths.find(path => fsSync.existsSync(path));
-                if (!sevenZipPath) {
-                    throw new Error('7-Zip is not installed or not found in the default locations');
-                }
-
-                await execPromise(`"${sevenZipPath}" x -y "${filePath}" -o"${outputPath}"`);
-                break;
-            default:
-                throw new Error('Unsupported archive format');
-        }
-
-        // Verify extraction succeeded
-        const files = await fs.readdir(outputPath);
-        if (files.length === 0) {
-            throw new Error('Archive appears to be empty or extraction failed');
-        }
-    } catch (error) {
-        throw new Error(`Extraction failed: ${error.message}`);
-    }
-}
 
 module.exports = (app) => {
     app.get('/api/serverip', (req, res) => {
