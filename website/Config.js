@@ -1,10 +1,10 @@
 module.exports = {
-    name: 'GrowPlus',   // name of the server
+    name: 'Gloryps',   // name of the server
 
     server_data: {
-        ip: "127.0.0.1",    // your enet host
+        ip: "157.230.218.22",    // your enet host
         port: "17091",  // your enet port
-        meta: "localhost",
-        loginurl: "137.0.0.1"   // login dashboard
+        meta: "GloryPs",
+        loginurl: "glory-ps.vercel.app"   // login dashboard
     }
 };
