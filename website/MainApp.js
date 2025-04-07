@@ -12,19 +12,30 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// importing the routes
-require(path.join(__dirname, 'routes', 'Index.js'))(app);
-require(path.join(__dirname, 'routes', 'GrowtopiaGame.js'))(app);
-require(path.join(__dirname, 'routes', 'GrowtopiaWebview.js'))(app);
-require(path.join(__dirname, 'routes', 'DataCenter.js'))(app);
-
-// static files
+// static files - must be before routes
 app.use(express.static(path.join(__dirname, 'public')));
+
+// importing the routes
+try {
+    require(path.join(__dirname, 'routes', 'Index.js'))(app);
+    require(path.join(__dirname, 'routes', 'GrowtopiaGame.js'))(app);
+    require(path.join(__dirname, 'routes', 'GrowtopiaWebview.js'))(app);
+    require(path.join(__dirname, 'routes', 'DataCenter.js'))(app);
+    console.log('All routes loaded successfully');
+} catch (error) {
+    console.error('Error loading routes:', error);
+}
 
 // 404 route
 app.use((req, res) => {
-    console.log(`[${new Date().toLocaleString()}] Missing file: ${req.url} [${req.method}] - ${res.statusCode}`);
-    return res.sendStatus(200);
+    console.log(`[${new Date().toLocaleString()}] 404 Not Found: ${req.url} [${req.method}]`);
+    res.status(404).send('Not Found');
+});
+
+// error handling middleware
+app.use((err, req, res, next) => {
+    console.error(`[${new Date().toLocaleString()}] Error: ${err.message}`);
+    res.status(500).send('Internal Server Error');
 });
 
 // exporting express app
