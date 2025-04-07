@@ -22,7 +22,11 @@ module.exports = (app) => {
             return res.status(200).end();
         }
         
-        console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url} - ${res.statusCode}`);
+        // Log after the response is sent
+        res.on('finish', () => {
+            console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url} - ${res.statusCode}`);
+        });
+        
         next();
     });
 
@@ -31,6 +35,11 @@ module.exports = (app) => {
 
     // home page
     app.get('/', (req, res) => {
-        res.render('IndexView');
+        try {
+            res.render('IndexView');
+        } catch (error) {
+            console.error('Error rendering IndexView:', error);
+            res.status(500).send('Error rendering page');
+        }
     });
 }
